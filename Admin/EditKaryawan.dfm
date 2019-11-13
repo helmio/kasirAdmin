@@ -1,0 +1,159 @@
+object Form5: TForm5
+  Left = 221
+  Top = 147
+  Width = 422
+  Height = 392
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = 'Edit Data Karyawan'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -16
+  Font.Name = 'Arial'
+  Font.Style = []
+  OldCreateOrder = False
+  OnActivate = FormActivate
+  OnCanResize = FormCanResize
+  PixelsPerInch = 96
+  TextHeight = 18
+  object Label1: TLabel
+    Left = 48
+    Top = 80
+    Width = 72
+    Height = 18
+    Caption = 'Username'
+  end
+  object Label2: TLabel
+    Left = 192
+    Top = 80
+    Width = 72
+    Height = 18
+    Caption = 'Username'
+  end
+  object Label3: TLabel
+    Left = 48
+    Top = 120
+    Width = 115
+    Height = 18
+    Caption = 'Nama Karyawan'
+  end
+  object Label4: TLabel
+    Left = 48
+    Top = 163
+    Width = 93
+    Height = 18
+    Caption = 'Tanggal Lahir'
+  end
+  object Label5: TLabel
+    Left = 48
+    Top = 206
+    Width = 37
+    Height = 18
+    Caption = 'Level'
+  end
+  object Label6: TLabel
+    Left = 48
+    Top = 249
+    Width = 70
+    Height = 18
+    Caption = 'Password'
+  end
+  object Label7: TLabel
+    Left = 80
+    Top = 24
+    Width = 241
+    Height = 32
+    Caption = 'Edit Data Karyawan'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -27
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Edit1: TEdit
+    Left = 192
+    Top = 118
+    Width = 137
+    Height = 26
+    TabOrder = 0
+  end
+  object Edit3: TEdit
+    Left = 192
+    Top = 244
+    Width = 137
+    Height = 26
+    PasswordChar = '*'
+    TabOrder = 1
+  end
+  object ComboBox1: TComboBox
+    Left = 192
+    Top = 202
+    Width = 137
+    Height = 26
+    ItemHeight = 18
+    TabOrder = 2
+    Items.Strings = (
+      'Pemilik'
+      'Manager'
+      'Kasir')
+  end
+  object Button1: TButton
+    Left = 112
+    Top = 296
+    Width = 75
+    Height = 33
+    Caption = 'Simpan'
+    Default = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 208
+    Top = 296
+    Width = 75
+    Height = 33
+    Caption = 'Batal'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+    OnClick = Button2Click
+  end
+  object DateTimePicker1: TDateTimePicker
+    Left = 192
+    Top = 160
+    Width = 137
+    Height = 26
+    Date = 42707.406458738430000000
+    Time = 42707.406458738430000000
+    TabOrder = 5
+  end
+  object ADOTable1: TADOTable
+    Active = True
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    TableName = 'DataKaryawan'
+    Left = 8
+    Top = 8
+  end
+  object ADOQuery1: TADOQuery
+    Active = True
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'select * from DataKaryawan')
+    Left = 40
+    Top = 8
+  end
+end

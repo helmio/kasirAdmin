@@ -1,0 +1,557 @@
+unit Utama;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Grids, DB, ADODB, ExtCtrls, DBGrids, frxClass,
+  frxDBSet, frxDMPExport;
+
+type
+  TForm1 = class(TForm)
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    StringGrid1: TStringGrid;
+    Edit1: TEdit;
+    Label1: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    ADOConnection1: TADOConnection;
+    ADOQuery1: TADOQuery;
+    Label15: TLabel;
+    Timer1: TTimer;
+    ADOQuery2: TADOQuery;
+    StringGrid2: TStringGrid;
+    ADOQuery3: TADOQuery;
+    frxDBDataset1: TfrxDBDataset;
+    frxReport1: TfrxReport;
+    Label6: TLabel;
+    Label16: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+    procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
+    procedure FormActivate(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Edit1KeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure StringGrid2SelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
+    procedure StringGrid2KeyPress(Sender: TObject; var Key: Char);
+    procedure Hapus;
+    procedure FormCanResize(Sender: TObject; var NewWidth,
+      NewHeight: Integer; var Resize: Boolean);
+    procedure responsive;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  hitung,hh,ID_awal,Jumlah_id,total_potongan:integer;
+  Nama_Toko,ALamat_Toko:String;
+implementation
+
+uses Login;
+
+{$R *.dfm}
+
+function waktu:string;
+var tgl : TDateTime;
+begin
+  tgl:=now();
+  result:= FormatDateTime('dd/mm/yyyy hh:mm:ss', tgl);
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+var i:integer;  str,str1,str2,str3:string;
+FormatUang: Currency;
+begin
+  str := edit1.text;
+  str1 := copy(str,0,1);
+  str2 := copy(str,2,12);
+  str3 := copy(str,2,3);
+  if(str1 = '*')
+    THEN
+      begin
+        if(str3 ='0')
+          THEN
+            begin
+              edit1.Text := '*';
+              edit1.SelStart := 2;
+            end;
+      end;
+  if(str1 = '=') AND (str2 <> 'd') AND (str2 <> 'D') AND (str2 <> 'n') AND (str2 <> 'N')
+    THEN
+      begin
+        str2 := StringReplace(str2,'.','',[rfReplaceAll,rfIgnoreCase]);
+        FormatUang := StrToCurrDef(str2,0);
+        Edit1.Text := FormatCurr('"="#,###',FormatUang);
+        Edit1.SelStart := length(Edit1.text);
+      end;
+  if(length(edit1.Text)>=3)
+    THEN
+      Begin
+        ADOQuery1.Close;
+        ADOQuery1.SQL.Clear;
+        ADOQuery1.SQL.Add('SELECT * FROM Barang WHERE Kode LIKE'+quotedstr(edit1.text + '%'));
+        ADOQuery1.Open;
+        if(ADOQuery1.RecordCount=0)
+          THEN
+              Stringgrid2.Hide
+          else
+            begin
+              if(ADOQuery1.recordcount>=1)
+                THEN
+                  begin
+                    ADOQuery2.Close;
+                    ADOQuery2.SQL.Clear;
+                    ADOQuery2.SQL.Add('SELECT * FROM Barang WHERE Kode ='+quotedstr(edit1.text));
+                    ADOQuery2.Open;
+                    if(ADOQuery2.RecordCount=1) AND (ADOQuery1.recordcount<=1)
+                      THEN
+                        stringgrid2.Hide
+                      else
+                        begin
+                          stringgrid2.show;
+                          i:=0;
+                          while(i<=stringgrid2.RowCount)do
+                            begin
+                              stringgrid2.Rows[i].Clear;
+                              i := i+1;
+                            end;
+                          stringgrid2.RowCount := ADOQuery1.RecordCount;
+                          i:=0;
+                          while(i<=ADOQuery1.RecordCount)do
+                            begin
+                              stringgrid2.Cells[0,i] := ADOQuery1.FieldValues['Kode'];
+                              stringgrid2.Cells[1,i] := ADOQuery1.FieldValues['Nama_Barang'];
+                              ADOQuery1.Next;
+                              i:=i+1;
+                            end;
+                        end;
+                  end
+                else
+                  stringgrid2.hide;
+            end;
+      end
+    else
+      stringgrid2.Hide;
+end;
+
+procedure TForm1.responsive;
+begin
+  Groupbox1.top	:= 0;
+  Groupbox1.Width	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 1017))));
+  Groupbox1.height := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 185))));
+  Groupbox1.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 8))));
+  Groupbox3.top	:= 0;
+  Groupbox3.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 1032))));
+  Groupbox3.Width	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 329))));
+  Groupbox3.height := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 289))));
+  Groupbox2.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 184))));
+  Groupbox2.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 8))));
+  Groupbox2.Width	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 1017))));
+  Groupbox2.height := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 105))));
+  label13.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 32))));
+  label13.font.size := strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label13.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 24))));
+  label14.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 56))));
+  label14.font.size := strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 48))));
+  label14.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 52))));
+  label1.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 45))));
+  label1.font.size := strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 15))));
+  label1.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 48))));
+  edit1.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 37))));
+  edit1.width	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 260))));
+  edit1.height	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 40))));
+  edit1.left	:= label1.width+label1.left+strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 16))));
+  label3.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 48))));
+  label3.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label3.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 32))));
+  label4.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 80))));
+  label4.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label4.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 32))));
+  label5.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 112))));
+  label5.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label5.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 32))));
+  label6.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 144))));
+  label6.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label6.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 32))));
+  label7.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 176))));
+  label7.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label7.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 32))));
+  label8.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 48))));
+  label8.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label8.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 232))));
+  label9.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 80))));
+  label9.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label9.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 232))));
+  label10.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 112))));
+  label10.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label10.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 232))));
+  label11.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 224))));
+  label11.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label11.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 88))));
+  label16.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 144))));
+  label16.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label16.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 232))));
+  label12.top	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 176))));
+  label12.font.size	:= strtoint(floattostr(round(strtofloat(inttostr(screen.width)) / (1366 / 12))));
+  label12.left	:= strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 232))));
+  Stringgrid1.top := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 296))));
+  Stringgrid1.width := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 1353))));
+  Stringgrid1.height := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 401))));
+  Stringgrid1.left := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 8))));
+  Stringgrid2.top := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 264))));
+  Stringgrid2.width := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 350))));
+  Stringgrid2.height := strtoint(floattostr(trunc(strtofloat(inttostr(screen.height)) / (768 / 102))));
+  Stringgrid2.left := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 440))));
+  stringgrid2.ColWidths[0] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 110))));
+  stringgrid2.ColWidths[1] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 240))));
+  stringgrid1.ColWidths[1] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 185))));
+  stringgrid1.ColWidths[2] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 574))));
+  stringgrid1.ColWidths[3] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 150))));
+  stringgrid1.ColWidths[4] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 80))));
+  stringgrid1.ColWidths[5] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 150))));
+  stringgrid1.ColWidths[6] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 175))));
+  stringgrid1.ColWidths[0] := strtoint(floattostr(trunc(strtofloat(inttostr(screen.width)) / (1366 / 30))));
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  responsive;
+  stringgrid2.hide;
+  label13.hide;
+  stringgrid1.Cells[0,0] := 'No.';
+  stringgrid1.Cells[1,0] := 'Kode';
+  stringgrid1.Cells[2,0] := 'Nama Barang';
+  stringgrid1.Cells[3,0] := 'Harga';
+  stringgrid1.Cells[4,0] := 'Jumlah';
+  stringgrid1.Cells[5,0] := 'Diskon';
+  stringgrid1.Cells[6,0] := 'Total';
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Clear;
+  ADOQuery1.SQL.Add('SELECT * FROM Transaksi WHERE ID IN(SELECT MAX(ID)FROM Transaksi)');
+  ADOQuery1.Open;
+  ID_awal := ADOQuery1.FieldValues['No_Struk'];
+  Jumlah_id := ADOQuery1.FieldValues['No_Struk'];
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Clear;
+  ADOQuery1.SQL.Add('SELECT * FROM DataToko WHERE ID=1');
+  ADOQuery1.Open;
+  Nama_Toko := ADOQUery1.FieldValues['Nama_Toko'];
+  Alamat_Toko := ADOQUery1.FieldValues['Alamat'];
+end;
+
+procedure TForm1.Hapus;
+var i:integer;
+begin
+  hitung:=0;
+  edit1.clear;
+  edit1.setfocus;
+  label8.Caption := '0';
+  label9.Caption := '0';
+  label10.Caption := '0';
+  label14.caption := '0';
+  label16.caption := '0';
+  label13.Hide;
+  stringgrid1.RowCount := 2;
+  for i :=1 to stringgrid1.ColCount -1 do
+    stringgrid1.Rows[i].Clear;
+end;
+
+procedure TForm1.Edit1KeyPress(Sender: TObject; var Key: Char);
+var i,total_barang,total_harga,Harga_barang,Diskon_persen:integer; str,str1,str2:string;
+begin
+  if not(key in['0'..'9','=','d','D','n','N','*',#13,#8])
+    then
+      key:=#0;
+  str := edit1.text;
+  str1 := copy(str,0,1);
+  str2 := copy(str,2,12);
+  if(str1 = '*')
+    THEN
+      begin
+        if not(key in['0'..'9',#13,#8])
+          then
+            key:=#0;
+      end;
+  if key=#13
+    then
+      begin
+        Edit1.OnChange:=nil;
+        key:=#0;
+        if(str = '=n') OR (str = '=N')
+          THEN
+            begin
+              if(stringgrid1.Cells[1,1] <> '0') AND (label16.Caption <> '0')
+                THEN
+                  begin
+                    i:=1;
+                    ADOQuery1.Close;
+                    ADOQuery1.SQL.Clear;
+                    ADOQuery1.SQL.Add('SELECT * FROM Transaksi WHERE ID IN(SELECT MAX(ID)FROM Transaksi)');
+                    ADOQuery1.Open;
+                    Jumlah_id := ADOQuery1.FieldValues['No_Struk']+1;
+                    ID_awal := ADOQuery1.FieldValues['No_Struk'];
+                    while(i<=hitung)do
+                      begin
+                        //Select Harga beli dan diskon
+                        ADOQuery1.Close;
+                        ADOQuery1.SQL.Clear;
+                        ADOQuery1.SQL.Add('SELECT * FROM Barang WHERE Kode="'+stringgrid1.Cells[1,i]+'"');
+                        ADOQuery1.Open;
+                        Harga_barang := ADOQuery1.FieldValues['Harga_Beli'];
+                        Diskon_persen := ADOQuery1.FieldValues['Diskon'];
+                        //Create data transaksi
+                        ADOQuery1.Close;
+                        ADOQuery1.SQL.Clear;
+                        ADOQuery1.SQL.Add('SELECT * FROM Transaksi');
+                        ADOQuery1.Open;
+                        ADOQuery1.Append;
+                        ADOQuery1.FieldValues['Kode'] := stringgrid1.Cells[1,i];
+                        ADOQuery1.FieldValues['Nama_Barang'] := stringgrid1.Cells[2,i];
+                        ADOQuery1.FieldValues['Harga_Beli'] := Harga_barang;
+                        ADOQuery1.FieldValues['Harga_Jual'] := stringgrid1.Cells[3,i];
+                        ADOQuery1.FieldValues['Jumlah'] := stringgrid1.Cells[4,i];
+                        ADOQuery1.FieldValues['Diskon'] := Diskon_persen;
+                        ADOQuery1.FieldValues['Waktu'] := label11.caption;
+                        ADOQuery1.FieldValues['Kasir'] := label12.caption;
+                        ADOQuery1.FieldValues['No_Struk'] := Jumlah_id;
+                        ADOQuery1.Post;
+                        i := i+1;
+                      end;
+              TfrxMemoView(frxReport1.FindObject('Memo8')).Memo.Text := Nama_Toko;
+              TfrxMemoView(frxReport1.FindObject('Memo7')).Memo.Text := Alamat_Toko;
+              TfrxMemoView(frxReport1.FindObject('Memo14')).Memo.Text := 'Rp'+label10.caption+',00';
+              TfrxMemoView(frxReport1.FindObject('Memo15')).Memo.Text := 'Rp'+label16.caption+',00';
+              TfrxMemoView(frxReport1.FindObject('Memo16')).Memo.Text := 'Rp'+label14.caption+',00';
+              TfrxMemoView(frxReport1.FindObject('Memo21')).Memo.Text := label12.Caption;
+              TfrxMemoView(frxReport1.FindObject('Memo22')).Memo.Text := label11.Caption;
+              TfrxMemoView(frxReport1.FindObject('Memo23')).Memo.Text := 'Rp'+FormatCurr('#,###', StrToCurrDef(inttostr(total_potongan), 0))+',00';
+              ADOQuery1.Close;
+              ADOQuery1.SQL.Clear;
+              ADOQuery1.SQL.Add('SELECT Cetak_Struk FROM DataToko WHERE ID=1');
+              ADOQuery1.Open;
+              if(ADOQuery1.FieldValues['Cetak_Struk']=1)
+                THEN
+                  Begin
+                    ADOQuery3.Close;
+                    ADOQuery3.SQL.Clear;
+                    ADOQuery3.SQL.Add('SELECT * FROM Transaksi WHERE No_Struk = "'+inttostr(Jumlah_id)+'"');
+                    ADOQuery3.Open;
+                    FrxReport1.PrepareReport();
+                    FrxReport1.PrintOptions.ShowDialog := False;
+                    FrxReport1.Print;
+                  end;
+              Hapus;
+            end
+            ELSE
+              begin
+                showmessage('Data Tidak Valid!');
+                edit1.clear;
+              end;
+        end
+          else if(str = '=d') OR (str = '=D')
+            THEN
+              Hapus
+          else if(str1 = '*')
+            THEN
+              begin
+                if not(key in['1'..'9',#13,#8]) then key:=#0;
+                label15.Caption := str2;
+                edit1.Clear;
+              end
+          else if(str1 = '=')
+            THEN
+              begin
+                if(strtoint(StringReplace(str2,'.','',[rfReplaceAll,rfIgnoreCase]))>=strtoint(StringReplace(label10.caption,'.','',[rfReplaceAll,rfIgnoreCase])))
+                  THEN
+                    begin
+                      label16.caption := str2;
+                      label13.show;
+                      if(strtoint(StringReplace(str2,'.','',[rfReplaceAll,rfIgnoreCase]))-strtoint(StringReplace(label10.caption,'.','',[rfReplaceAll,rfIgnoreCase]))=0)then label14.caption := '0' else
+                      label14.caption := FormatCurr('#,###', StrToCurrDef(inttostr(strtoint(StringReplace(str2,'.','',[rfReplaceAll,rfIgnoreCase]))-strtoint(StringReplace(label10.caption,'.','',[rfReplaceAll,rfIgnoreCase]))), 0));
+
+                      edit1.Text := '';
+                    end
+                  else
+                    showmessage('Uang yang dibayarkan kurang!');
+              end
+          else
+            begin
+              //kode barang
+              ADOQuery1.Close;
+              ADOQuery1.SQL.Clear;
+              ADOQuery1.SQL.Add('SELECT * FROM Barang WHERE Kode = '+quotedstr(edit1.text));
+              ADOQuery1.Open;
+              if(ADOQuery1.RecordCount=0)
+                THEN
+                  showmessage('Data tidak ditemukan')
+                else
+                  begin
+                    inc(hitung);
+                    edit1.clear;
+                    label14.Caption := FormatCurr('#,###', StrToCurrDef(ADOQuery1.FieldValues['Harga'], 0));
+                    stringgrid1.RowCount:=hitung+1;
+                    stringgrid1.Cells[1,hitung] := ADOQuery1.FieldValues['Kode'];
+                    stringgrid1.Cells[2,hitung] := ADOQuery1.FieldValues['Nama_Barang'];
+                    stringgrid1.Cells[3,hitung] := FormatCurr('#,###', StrToCurrDef(inttostr(ADOQuery1.FieldValues['Harga']), 0));
+                    stringgrid1.Cells[4,hitung] := label15.caption;
+                    stringgrid1.Cells[5,hitung] := FormatCurr('#,###', StrToCurrDef(inttostr(((ADOQuery1.FieldValues['Harga']*label15.caption)*ADOQuery1.FieldValues['Diskon'])/100), 0));
+                    stringgrid1.Cells[6,hitung] := FormatCurr('#,###', StrToCurrDef(inttostr(ADOQuery1.FieldValues['Harga']*label15.caption-stringgrid1.Cells[5,hitung]), 0));
+                    stringgrid1.Cells[0,hitung] := inttostr(hitung);
+                    label15.Caption := '1';
+                    Stringgrid2.Selection:=TGridRect(Rect(1,0 ,2 ,0));
+                    label13.hide;
+                  end;
+                  i:=1;
+                  total_harga := 0;
+                  total_barang := 0;
+                  total_potongan := 0;
+                  while(i<=hitung)do
+                    begin
+                      total_harga := total_harga+strtoint(StringReplace(StringGrid1.cells[6,i],'.','',[rfReplaceAll,rfIgnoreCase]));
+                      total_barang := total_barang+strtoint(StringGrid1.cells[4,i]);
+                      total_potongan := total_potongan+strtoint(StringReplace(StringGrid1.cells[5,i],'.','',[rfReplaceAll,rfIgnoreCase]));
+                      label10.Caption := FormatCurr('#,###', StrToCurrDef(inttostr(total_harga), 0));
+                      label9.caption := inttostr(total_barang);
+                      label8.caption := inttostr(hitung);
+                      i:=i+1;
+                    end;
+                    total_potongan := total_potongan;
+              end;
+      //end kode barang
+      stringgrid2.hide;
+      Edit1.OnChange:=Form1.Edit1Change;
+      end;
+end;
+
+procedure TForm1.StringGrid1SelectCell(Sender: TObject; ACol,
+  ARow: Integer; var CanSelect: Boolean);
+var i,total_harga,total_barang :integer;
+begin
+  if(hitung>0)
+    THEN
+      begin
+        Stringgrid1.Selection:=TGridRect(Rect(1,aRow ,6 ,aRow));
+        if messagedlg('Hapus Barang '+StringGrid1.Cells[2,aRow]+'',mtconfirmation,[mbYes,mbNo],0)=mrYes
+          then
+            begin
+              Stringgrid1.Selection:=TGridRect(Rect(1,1 ,6 ,1));
+              if(stringgrid1.RowCount=2)
+                THEN
+                  begin
+                    hitung := 0;
+                    stringgrid1.Rows[1].clear;
+                    label10.Caption := '0';
+                    label9.caption := '0';
+                    label8.caption := '0';
+                  end
+                  else if(stringgrid1.rowcount>=3)
+                    THEN
+                      begin
+                        while(arow<=hitung)do
+                          begin
+                            stringgrid1.cells[1,arow] := stringgrid1.cells[1,arow+1];
+                            stringgrid1.cells[2,arow] := stringgrid1.cells[2,arow+1];
+                            stringgrid1.cells[3,arow] := stringgrid1.cells[3,arow+1];
+                            stringgrid1.cells[4,arow] := stringgrid1.cells[4,arow+1];
+                            stringgrid1.cells[5,arow] := stringgrid1.cells[5,arow+1];
+                            stringgrid1.cells[6,arow] := stringgrid1.cells[6,arow+1];
+                            arow := arow+1;
+                          end;
+                          stringgrid1.Rowcount := hitung;
+                          hitung := hitung-1;
+                      end;
+              i:=1;
+              total_harga := 0;
+              total_barang := 0;
+              while(i<=hitung)do
+                begin
+                  total_harga := total_harga+strtoint(StringGrid1.cells[6,i]);
+                  total_barang := total_barang+strtoint(StringGrid1.cells[4,i]);
+                  label10.Caption := inttostr(total_harga);
+                  label9.caption := inttostr(total_barang);
+                  label8.caption := inttostr(hitung);
+                  i:=i+1;
+                end;
+            end;
+      end;
+end;
+
+procedure TForm1.FormActivate(Sender: TObject);
+begin
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Clear;
+  ADOQuery1.SQL.Add('SELECT Karyawan FROM DataToko WHERE ID=1');
+  ADOQuery1.Open;
+  if(ID_awal>=Jumlah_id) AND (ADOQuery1.FieldValues['Karyawan']='1')
+    THEN
+      form2.showmodal;
+  edit1.setfocus;
+  label12.caption := username;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  label11.Caption := waktu;
+end;
+
+procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if(key = VK_UP) AND (stringgrid2.visible=TRUE)
+  THEN
+    stringgrid2.setfocus;
+end;
+
+procedure TForm1.Edit1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if(key = VK_DOWN) AND (stringgrid2.visible=TRUE)
+    THEN
+      stringgrid2.setfocus;
+end;
+
+procedure TForm1.StringGrid2SelectCell(Sender: TObject; ACol,
+  ARow: Integer; var CanSelect: Boolean);
+begin
+  Stringgrid2.Selection:=TGridRect(Rect(1,aRow ,2 ,aRow));
+  hh := arow;
+end;
+
+procedure TForm1.StringGrid2KeyPress(Sender: TObject; var Key: Char);
+begin
+  if(key in[#13])
+    THEN
+      begin
+        edit1.text := Stringgrid2.Cells[0,hh];
+        edit1.setfocus;
+        stringgrid2.Hide;
+      end
+end;
+
+procedure TForm1.FormCanResize(Sender: TObject; var NewWidth,
+  NewHeight: Integer; var Resize: Boolean);
+begin
+  Resize := false;
+end;
+
+end.

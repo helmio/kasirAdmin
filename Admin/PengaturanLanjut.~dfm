@@ -1,0 +1,189 @@
+object Form6: TForm6
+  Left = 549
+  Top = 145
+  Width = 442
+  Height = 321
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = 'Pengaturan Lanjut'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Arial'
+  Font.Style = []
+  OldCreateOrder = False
+  OnActivate = FormActivate
+  PixelsPerInch = 96
+  TextHeight = 16
+  object Label1: TLabel
+    Left = 48
+    Top = 56
+    Width = 104
+    Height = 16
+    Caption = 'Password Pemilik'
+  end
+  object Label2: TLabel
+    Left = 168
+    Top = 92
+    Width = 59
+    Height = 16
+    Caption = 'Username'
+  end
+  object Label3: TLabel
+    Left = 168
+    Top = 124
+    Width = 57
+    Height = 16
+    Caption = 'Password'
+  end
+  object Label4: TLabel
+    Left = 48
+    Top = 168
+    Width = 92
+    Height = 16
+    Caption = 'Login Karyawan'
+  end
+  object Label5: TLabel
+    Left = 48
+    Top = 200
+    Width = 69
+    Height = 16
+    Caption = 'Cetak Struk'
+  end
+  object Label6: TLabel
+    Left = 84
+    Top = 16
+    Width = 242
+    Height = 32
+    Caption = 'Pengaturan Lanjut'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -27
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Edit1: TEdit
+    Left = 240
+    Top = 88
+    Width = 121
+    Height = 24
+    Enabled = False
+    TabOrder = 0
+  end
+  object Edit2: TEdit
+    Left = 240
+    Top = 120
+    Width = 121
+    Height = 24
+    Enabled = False
+    PasswordChar = '*'
+    TabOrder = 1
+  end
+  object Button1: TButton
+    Left = 120
+    Top = 232
+    Width = 75
+    Height = 25
+    Caption = 'Simpan'
+    TabOrder = 2
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 216
+    Top = 232
+    Width = 75
+    Height = 25
+    Caption = 'Batal'
+    TabOrder = 3
+    OnClick = Button2Click
+  end
+  object Panel1: TPanel
+    Left = 192
+    Top = 48
+    Width = 121
+    Height = 33
+    BevelOuter = bvNone
+    TabOrder = 4
+    object RadioButton5: TRadioButton
+      Left = 8
+      Top = 8
+      Width = 41
+      Height = 17
+      Caption = 'Ya'
+      TabOrder = 0
+      OnClick = RadioButton5Click
+    end
+    object RadioButton6: TRadioButton
+      Left = 64
+      Top = 8
+      Width = 57
+      Height = 17
+      Caption = 'Tidak'
+      Checked = True
+      TabOrder = 1
+      TabStop = True
+      OnClick = RadioButton6Click
+    end
+  end
+  object Panel2: TPanel
+    Left = 192
+    Top = 160
+    Width = 121
+    Height = 25
+    BevelOuter = bvNone
+    TabOrder = 5
+    object RadioButton7: TRadioButton
+      Left = 8
+      Top = 8
+      Width = 41
+      Height = 17
+      Caption = 'Ya'
+      TabOrder = 0
+    end
+    object RadioButton8: TRadioButton
+      Left = 64
+      Top = 8
+      Width = 57
+      Height = 17
+      Caption = 'Tidak'
+      Checked = True
+      TabOrder = 1
+      TabStop = True
+    end
+  end
+  object Panel3: TPanel
+    Left = 192
+    Top = 192
+    Width = 121
+    Height = 25
+    BevelOuter = bvNone
+    TabOrder = 6
+    object RadioButton9: TRadioButton
+      Left = 8
+      Top = 8
+      Width = 41
+      Height = 17
+      Caption = 'Ya'
+      TabOrder = 0
+    end
+    object RadioButton10: TRadioButton
+      Left = 64
+      Top = 8
+      Width = 57
+      Height = 17
+      Caption = 'Tidak'
+      Checked = True
+      TabOrder = 1
+      TabStop = True
+    end
+  end
+  object ADOQuery1: TADOQuery
+    Active = True
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'Select * From DataToko')
+  end
+end

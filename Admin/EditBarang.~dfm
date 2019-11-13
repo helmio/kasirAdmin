@@ -1,0 +1,130 @@
+object Form7: TForm7
+  Left = 212
+  Top = 135
+  Width = 420
+  Height = 394
+  Caption = 'Edit Barang'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Arial'
+  Font.Style = []
+  OldCreateOrder = False
+  OnActivate = FormActivate
+  OnCanResize = FormCanResize
+  PixelsPerInch = 96
+  TextHeight = 16
+  object Label1: TLabel
+    Left = 88
+    Top = 32
+    Width = 222
+    Height = 32
+    Caption = 'Edit Data Barang'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -27
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 64
+    Top = 90
+    Width = 75
+    Height = 16
+    Caption = 'Kode Barang'
+  end
+  object Label3: TLabel
+    Left = 64
+    Top = 131
+    Width = 79
+    Height = 16
+    Caption = 'Nama Barang'
+  end
+  object Label4: TLabel
+    Left = 64
+    Top = 171
+    Width = 107
+    Height = 16
+    Caption = 'Harga Beli (Modal)'
+  end
+  object Label5: TLabel
+    Left = 64
+    Top = 212
+    Width = 61
+    Height = 16
+    Caption = 'Harga Jual'
+  end
+  object Label7: TLabel
+    Left = 64
+    Top = 252
+    Width = 60
+    Height = 16
+    Caption = 'Diskon(%)'
+  end
+  object Edit1: TEdit
+    Left = 184
+    Top = 88
+    Width = 121
+    Height = 24
+    TabOrder = 0
+  end
+  object Edit2: TEdit
+    Left = 184
+    Top = 128
+    Width = 145
+    Height = 24
+    TabOrder = 1
+  end
+  object Edit3: TEdit
+    Left = 184
+    Top = 168
+    Width = 105
+    Height = 24
+    TabOrder = 2
+  end
+  object Edit4: TEdit
+    Left = 184
+    Top = 208
+    Width = 105
+    Height = 24
+    TabOrder = 3
+  end
+  object Edit6: TEdit
+    Left = 184
+    Top = 248
+    Width = 41
+    Height = 24
+    TabOrder = 4
+  end
+  object Button1: TButton
+    Left = 104
+    Top = 296
+    Width = 75
+    Height = 25
+    Caption = 'Simpan'
+    Default = True
+    TabOrder = 5
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 200
+    Top = 296
+    Width = 75
+    Height = 25
+    Caption = 'Keluar'
+    TabOrder = 6
+    OnClick = Button2Click
+  end
+  object ADOQuery1: TADOQuery
+    Active = True
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'select * from Barang')
+    Left = 16
+    Top = 8
+  end
+end
